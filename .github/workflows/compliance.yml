@@ -35,7 +35,7 @@ jobs:
             GOPATH="$PWD/.gopath" go install github.com/google/go-licenses@latest && \
             GOROOT="$(go env GOROOT)" "$PWD/.gopath/bin/go-licenses" check ./... \
               --include_tests \
-              --ignore "$(go list -m)$LICENSES_IGNORE_EXTRA" \
+              --ignore "$(go list -m),modernc.org/mathutil" \
               --allowed_licenses="\
                   MIT \
                 , Apache-2.0 \
