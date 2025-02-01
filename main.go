@@ -58,7 +58,7 @@ func loadTLDs(ctx context.Context, requestTimeout time.Duration, l *slog.Logger)
 	}
 	defer func() {
 		if err := res.Body.Close(); err != nil {
-			l.Error(fmt.Errorf("failed to close body: %w", err).Error())
+			l.ErrorContext(ctx, fmt.Errorf("failed to close body: %w", err).Error())
 		}
 	}()
 
@@ -73,7 +73,7 @@ func loadTLDs(ctx context.Context, requestTimeout time.Duration, l *slog.Logger)
 
 		t, err := prof.ToUnicode(line)
 		if err != nil {
-			l.Error(fmt.Errorf("failed to puny decode %q: %w", line, err).Error())
+			l.ErrorContext(ctx, fmt.Errorf("failed to puny decode %q: %w", line, err).Error())
 		}
 
 		tlds = append(tlds, tld(t))
@@ -109,7 +109,7 @@ func run(
 		if _, err := db.Exec(sqliteInitStmt); err != nil {
 			return fmt.Errorf("failed to init database: %w", err)
 		}
-		l.Info("successfully initialized database")
+		l.InfoContext(ctx, "successfully initialized database")
 	}
 
 	stmt, err := db.Prepare(sqliteInsertStmt)
@@ -118,7 +118,7 @@ func run(
 	}
 	defer func() {
 		if err := stmt.Close(); err != nil {
-			l.Error(fmt.Errorf("failed to close insert statement: %w", err).Error())
+			l.ErrorContext(ctx, fmt.Errorf("failed to close insert statement: %w", err).Error())
 		}
 	}()
 
@@ -134,7 +134,8 @@ func run(
 				continue
 			}
 
-			l.Error(
+			l.ErrorContext(
+				ctx,
 				"failed to exec insert statement",
 				"err", err,
 				"tld", fmt.Sprintf("%+v", tld),
