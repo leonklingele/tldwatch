@@ -177,11 +177,13 @@ func main() {
 		ll.Set(slog.LevelDebug)
 	}
 
+	ctx := context.Background()
+
 	if err := run(
-		context.Background(),
+		ctx,
 		l,
 		sqliteFile,
 	); err != nil {
-		l.Error(err.Error())
+		l.ErrorContext(ctx, err.Error())
 	}
 }
